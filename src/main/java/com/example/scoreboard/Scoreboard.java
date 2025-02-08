@@ -8,32 +8,19 @@ import java.util.List;
 public class Scoreboard {
 
     private final MatchRepository repository = new MatchRepository();
+    private final ScoreboardValidator validator = new ScoreboardValidator();
 
     /**
      * Starts a match with an initial score of 0-0.
      *
-     * @param homeTeam name of the home team; must not be null, blank, or equal to awayTeam
-     * @param awayTeam name of the away team; must not be null, blank, or equal to homeTeam
-     * @throws IllegalArgumentException if any team name is null, blank, if both teams are the same,
-     *                                  or if either team is already in a match.
+     * @param homeTeam name of the home team; must not be null, blank, or equal to awayTeam,
+     *                 and must not already be in a match.
+     * @param awayTeam name of the away team; must not be null, blank, or equal to homeTeam,
+     *                 and must not already be in a match.
+     * @throws IllegalArgumentException if validation fails.
      */
     public void startMatch(String homeTeam, String awayTeam) {
-        if (homeTeam == null || homeTeam.isBlank()) {
-            throw new IllegalArgumentException("Home team name cannot be empty.");
-        }
-        if (awayTeam == null || awayTeam.isBlank()) {
-            throw new IllegalArgumentException("Away team name cannot be empty.");
-        }
-        if (homeTeam.equals(awayTeam)) {
-            throw new IllegalArgumentException("Home and away teams must be different.");
-        }
-        // Check if either team is already in a match.
-        for (Match m : repository.getAllMatches()) {
-            if (m.homeTeam().equals(homeTeam) || m.awayTeam().equals(homeTeam)
-                    || m.homeTeam().equals(awayTeam) || m.awayTeam().equals(awayTeam)) {
-                throw new IllegalArgumentException("One of the teams is already in a match.");
-            }
-        }
+        validator.validateNewMatch(homeTeam, awayTeam, repository.getAllMatches());
         Match match = new Match(homeTeam, awayTeam, 0, 0);
         repository.addMatch(match);
     }
