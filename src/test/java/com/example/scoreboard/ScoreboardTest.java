@@ -33,10 +33,15 @@ class ScoreboardTest {
 
     @Test
     void should_throw_exception_when_home_team_is_null() {
+        // Given an empty scoreboard
         Scoreboard scoreboard = new Scoreboard();
+
+        // When starting a match with a null home team
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> scoreboard.startMatch(null, "TeamB"),
                 "Expected exception when home team is null.");
+
+        // Then an exception with the appropriate message is thrown.
         assertEquals("Home team name cannot be empty.", exception.getMessage());
     }
 
@@ -78,34 +83,35 @@ class ScoreboardTest {
 
     @Test
     void should_throw_exception_when_duplicate_match_in_any_order() {
-        Scoreboard scoreboard = new Scoreboard();
         // Given a started match between TeamA and TeamB
+        Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("TeamA", "TeamB");
-        // When starting a match with the same teams in reverse order
+
+        // When attempting to start a match with the same teams in reverse order
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> scoreboard.startMatch("TeamB", "TeamA"),
                 "Expected exception when duplicate match is added in reversed order.");
+
         // Then an exception with the appropriate message is thrown.
         assertEquals("One of the teams is already in a match.", exception.getMessage());
     }
 
     @Test
     void should_throw_exception_when_team_already_in_another_match() {
-        Scoreboard scoreboard = new Scoreboard();
         // Given a scoreboard with a match between TeamA and TeamB
+        Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("TeamA", "TeamB");
+
         // When starting another match with TeamA and TeamC
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> scoreboard.startMatch("TeamA", "TeamC"),
                 "Expected exception when home team is already in a match.");
-        // Then an exception with the appropriate message is thrown.
         assertEquals("One of the teams is already in a match.", exception.getMessage());
 
-        // When starting another match with TeamC and TeamB
+        // And when starting a match with TeamC and TeamB
         exception = assertThrows(IllegalArgumentException.class,
                 () -> scoreboard.startMatch("TeamC", "TeamB"),
                 "Expected exception when away team is already in a match.");
-        // Then an exception with the appropriate message is thrown.
         assertEquals("One of the teams is already in a match.", exception.getMessage());
     }
 
@@ -189,28 +195,54 @@ class ScoreboardTest {
         scoreboard.startMatch("TeamA", "TeamB");
         Match match = scoreboard.getSummary().getFirst();
 
-        // When attempting to update the score with a negative value
+        // When attempting to update the score with a negative home score,
+        // then an exception should be thrown.
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> scoreboard.updateScore(match, -1, 3));
+        assertEquals("Scores must be non-negative.", exception.getMessage());
 
-        // Then an exception with the message "Scores must be non-negative." is thrown.
+        // And when attempting to update the score with a negative away score,
+        // then an exception should also be thrown.
+        exception = assertThrows(IllegalArgumentException.class,
+                () -> scoreboard.updateScore(match, 2, -1));
         assertEquals("Scores must be non-negative.", exception.getMessage());
     }
 
     @Test
-    void updateScore_should_throw_exception_for_negative_away_score() {
-        // Given a scoreboard with a match between TeamA and TeamB
+    void should_return_summary_ordered_by_total_score_and_recency() {
+        // Given a scoreboard with several matches started in sequence
         Scoreboard scoreboard = new Scoreboard();
-        scoreboard.startMatch("TeamA", "TeamB");
-        Match match = scoreboard.getSummary().getFirst();
+        scoreboard.startMatch("Mexico", "Canada");    // Insertion index 0
+        scoreboard.startMatch("Spain", "Brazil");       // Insertion index 1
+        scoreboard.startMatch("Germany", "France");     // Insertion index 2
 
-        // When attempting to update the score with a negative away score
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> scoreboard.updateScore(match, 2, -1),
-                "Expected exception when away score is negative.");
+        // When updating scores so that two matches have equal total scores:
+        // - Mexico vs Canada: total score 5 (0+5)
+        // - Spain vs Brazil: total score 5 (2+3)
+        // - Germany vs France: total score 3 (2+1)
+        List<Match> initialSummary = scoreboard.getSummary();
+        Match mexicoMatch = initialSummary.stream()
+                .filter(m -> m.homeTeam().equals("Mexico"))
+                .findFirst().orElseThrow();
+        Match spainMatch = initialSummary.stream()
+                .filter(m -> m.homeTeam().equals("Spain"))
+                .findFirst().orElseThrow();
+        Match germanyMatch = initialSummary.stream()
+                .filter(m -> m.homeTeam().equals("Germany"))
+                .findFirst().orElseThrow();
 
-        // Then an exception with the message "Scores must be non-negative." is thrown.
-        assertEquals("Scores must be non-negative.", exception.getMessage());
+        scoreboard.updateScore(mexicoMatch, 0, 5);
+        scoreboard.updateScore(spainMatch, 2, 3);
+        scoreboard.updateScore(germanyMatch, 2, 1);
+
+        // Then the summary should be ordered as follows:
+        // 1. Spain vs Brazil (total 5, more recent than Mexico vs Canada)
+        // 2. Mexico vs Canada (total 5)
+        // 3. Germany vs France (total 3)
+        List<Match> summary = scoreboard.getSummary();
+        assertEquals(3, summary.size());
+        assertEquals("Spain", summary.getFirst().homeTeam());
+        assertEquals("Mexico", summary.get(1).homeTeam());
+        assertEquals("Germany", summary.get(2).homeTeam());
     }
-
 }

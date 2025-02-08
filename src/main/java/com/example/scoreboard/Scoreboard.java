@@ -1,5 +1,6 @@
 package com.example.scoreboard;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -29,7 +30,7 @@ public class Scoreboard {
      * Updates the score for an ongoing match.
      * <p>
      * Since {@code Match} is immutable, this method locates the match based on the teams provided
-     * in the {@code match} parameter and creates a new updated instance with the provided scores.
+     * in the {@code match} parameter and creates a new instance with the updated scores.
      * </p>
      *
      * @param match     the match instance identifying the match to update; the teams must match an existing match.
@@ -43,12 +44,18 @@ public class Scoreboard {
     }
 
     /**
-     * Returns an immutable summary of the current matches.
+     * Returns an immutable summary of the current matches, ordered by the total score in descending order.
+     * Matches with the same total score are ordered by recency (the match that was started later appears first).
      *
-     * @return an unmodifiable list of matches
+     * @return an unmodifiable list of matches, ordered by total score and recency.
      */
     public List<Match> getSummary() {
-        return repository.getAllMatches();
+        List<Match> matches = repository.getAllMatches();
+        return matches.stream()
+                .sorted(Comparator
+                        .comparingInt((Match m) -> m.homeScore() + m.awayScore()).reversed()
+                        .thenComparing(matches::indexOf, Comparator.reverseOrder()))
+                .toList();
     }
 
     /**
