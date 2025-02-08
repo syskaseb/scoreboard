@@ -33,6 +33,12 @@ This is a simple Java 21 library that implements a live scoreboard for the Footb
 - **Test-Driven Development (TDD):**  
   Comprehensive JUnit 5 tests are provided to cover all functionality, including negative score validation and summary ordering.
 
+### Assumptions
+- Under uncertain requirement on the API usage, I assumed that the user will add the match using only team names. Rest of the operations I assumed are using Match object.
+- I wanted to prevent creating multiple instances of the scoreboard as the name Live Football World Cup Scoreboard indicates no extensions. That's also why the Scoreboard class is final. Easily modifiable if needed.
+- API Usage is thread safe because of the unknown use case. Wanted to prevent any unexpected behavior of the API.
+- for better search performance a pageable search with support on repository level could be implemented. Then also an architecture decision on optimisations like maintaining order index within Match record or adding an index or some sort of precomputation.
+
 ## How to Run the Tests
 
 You can run the tests using Maven or the Maven wrapper:
