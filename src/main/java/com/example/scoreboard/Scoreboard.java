@@ -33,4 +33,13 @@ public class Scoreboard {
     public List<Match> getSummary() {
         return repository.getAllMatches();
     }
+
+    /**
+     * Finishes a match by removing it from storage.
+     *
+     * @param match the match instance to finish.
+     */
+    public void finishMatch(Match match) {
+        repository.removeMatch(match);
+    }
 }

@@ -22,8 +22,8 @@ class ScoreboardTest {
         List<Match> summary = scoreboard.getSummary();
         assertEquals(1, summary.size(), "Summary should contain one match.");
 
-        // And getSummary().getFirst() should return that match.
-        Match match = scoreboard.getSummary().getFirst();
+        // And the first match should be TeamA vs TeamB.
+        Match match = summary.getFirst();
         assertNotNull(match, "First match should not be null.");
         assertEquals("TeamA", match.homeTeam(), "Home team should be TeamA.");
         assertEquals("TeamB", match.awayTeam(), "Away team should be TeamB.");
@@ -107,6 +107,22 @@ class ScoreboardTest {
     }
 
     @Test
+    void should_remove_match_when_finished() {
+        // Given a scoreboard with a match
+        Scoreboard scoreboard = new Scoreboard();
+        scoreboard.startMatch("TeamA", "TeamB");
+        Match match = scoreboard.getSummary().getFirst();
+        assertNotNull(match, "There should be a match before finishing.");
+
+        // When finishing the match
+        scoreboard.finishMatch(match);
+
+        // Then the summary should be empty.
+        List<Match> summary = scoreboard.getSummary();
+        assertEquals(0, summary.size(), "Summary should be empty after finishing the match.");
+    }
+
+    @Test
     void should_add_multiple_matches_when_no_conflicts() {
         // Given an empty scoreboard
         Scoreboard scoreboard = new Scoreboard();
@@ -116,7 +132,7 @@ class ScoreboardTest {
         scoreboard.startMatch("TeamC", "TeamD");
         scoreboard.startMatch("TeamE", "TeamF");
 
-        // Then getSummary should return all the matches
+        // Then getSummary should return all the matches.
         List<Match> summary = scoreboard.getSummary();
         assertEquals(3, summary.size(), "Summary should contain three matches.");
 

@@ -20,6 +20,10 @@ class MatchRepository {
         return List.copyOf(matches.values());
     }
 
+    void removeMatch(Match match) {
+        matches.remove(generateKey(match));
+    }
+
     /**
      * Generates a canonical key so that the order of teams does not matter.
      */
