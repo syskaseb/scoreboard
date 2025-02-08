@@ -1,13 +1,12 @@
 package com.example.scoreboard;
 
-import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
+import org.junit.jupiter.api.Test;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ScoreboardTest {
@@ -33,10 +32,7 @@ class ScoreboardTest {
 
     @Test
     void should_throw_exception_when_home_team_is_null() {
-        // Given an empty scoreboard
         Scoreboard scoreboard = new Scoreboard();
-
-        // When & Then: starting a match with a null home team should throw an exception.
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> scoreboard.startMatch(null, "TeamB"),
                 "Expected exception when home team is null.");
@@ -45,10 +41,7 @@ class ScoreboardTest {
 
     @Test
     void should_throw_exception_when_home_team_is_blank() {
-        // Given an empty scoreboard
         Scoreboard scoreboard = new Scoreboard();
-
-        // When & Then: starting a match with a blank home team should throw an exception.
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> scoreboard.startMatch("   ", "TeamB"),
                 "Expected exception when home team is blank.");
@@ -57,10 +50,7 @@ class ScoreboardTest {
 
     @Test
     void should_throw_exception_when_away_team_is_null() {
-        // Given an empty scoreboard
         Scoreboard scoreboard = new Scoreboard();
-
-        // When & Then: starting a match with a null away team should throw an exception.
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> scoreboard.startMatch("TeamA", null),
                 "Expected exception when away team is null.");
@@ -69,13 +59,19 @@ class ScoreboardTest {
 
     @Test
     void should_throw_exception_when_away_team_is_blank() {
-        // Given an empty scoreboard
         Scoreboard scoreboard = new Scoreboard();
-
-        // When & Then: starting a match with a blank away team should throw an exception.
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> scoreboard.startMatch("TeamA", "  "),
                 "Expected exception when away team is blank.");
         assertEquals("Away team name cannot be empty.", exception.getMessage());
+    }
+
+    @Test
+    void should_throw_exception_when_same_team_names_are_used() {
+        Scoreboard scoreboard = new Scoreboard();
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> scoreboard.startMatch("TeamA", "TeamA"),
+                "Expected exception when same team names are used.");
+        assertEquals("Home and away teams must be different.", exception.getMessage());
     }
 }
