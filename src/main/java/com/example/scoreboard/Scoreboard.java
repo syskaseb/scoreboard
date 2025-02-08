@@ -4,9 +4,9 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Public API for managing live matches on the scoreboard.
+ * Public thread-safe API for managing live matches on the scoreboard.
  */
-public class Scoreboard {
+public final class Scoreboard {
 
     private final MatchRepository repository = new MatchRepository();
     private final ScoreboardValidator validator = new ScoreboardValidator();
@@ -21,9 +21,12 @@ public class Scoreboard {
      * @throws IllegalArgumentException if validation fails.
      */
     public void startMatch(String homeTeam, String awayTeam) {
-        validator.validateNewMatch(homeTeam, awayTeam, repository.getAllMatches());
-        Match match = new Match(homeTeam, awayTeam, 0, 0);
-        repository.addMatch(match);
+        // Synchronize to ensure that validate and add are atomic.
+        synchronized (repository) {
+            validator.validateNewMatch(homeTeam, awayTeam, repository.getAllMatches());
+            Match match = new Match(homeTeam, awayTeam, 0, 0);
+            repository.addMatch(match);
+        }
     }
 
     /**
@@ -39,8 +42,10 @@ public class Scoreboard {
      * @throws IllegalArgumentException if the match is not found or if any score is negative.
      */
     public void updateScore(Match match, int homeScore, int awayScore) {
-        validator.validateScore(homeScore, awayScore);
-        repository.updateMatchScore(match.homeTeam(), match.awayTeam(), homeScore, awayScore);
+        synchronized (repository) {
+            validator.validateScore(homeScore, awayScore);
+            repository.updateMatchScore(match.homeTeam(), match.awayTeam(), homeScore, awayScore);
+        }
     }
 
     /**
@@ -50,12 +55,14 @@ public class Scoreboard {
      * @return an unmodifiable list of matches, ordered by total score and recency.
      */
     public List<Match> getSummary() {
-        List<Match> matches = repository.getAllMatches();
-        return matches.stream()
-                .sorted(Comparator
-                        .comparingInt((Match m) -> m.homeScore() + m.awayScore()).reversed()
-                        .thenComparing(matches::indexOf, Comparator.reverseOrder()))
-                .toList();
+        synchronized (repository) {
+            List<Match> matches = repository.getAllMatches();
+            return matches.stream()
+                    .sorted(Comparator
+                            .comparingInt((Match m) -> m.homeScore() + m.awayScore()).reversed()
+                            .thenComparing(matches::indexOf, Comparator.reverseOrder()))
+                    .toList();
+        }
     }
 
     /**
@@ -64,6 +71,8 @@ public class Scoreboard {
      * @param match the match instance to finish.
      */
     public void finishMatch(Match match) {
-        repository.removeMatch(match);
+        synchronized (repository) {
+            repository.removeMatch(match);
+        }
     }
 }

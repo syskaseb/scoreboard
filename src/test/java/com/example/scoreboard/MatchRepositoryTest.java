@@ -44,9 +44,9 @@ class MatchRepositoryTest {
 
         // Look for a warning log record.
         List<LogRecord> records = logHandler.getRecords();
-        boolean foundWarning = records.stream().anyMatch(record ->
-                record.getLevel().equals(Level.WARNING)
-                && record.getMessage().contains("Attempted to add duplicate match"));
+        boolean foundWarning = records.stream().anyMatch(r ->
+                r.getLevel().equals(Level.WARNING)
+                && r.getMessage().contains("Attempted to add duplicate match"));
         assertTrue(foundWarning, "Expected warning log message when duplicate match is added.");
     }
 
@@ -58,9 +58,9 @@ class MatchRepositoryTest {
 
         // Look for a warning log record.
         List<LogRecord> records = logHandler.getRecords();
-        boolean foundWarning = records.stream().anyMatch(record ->
-                record.getLevel().equals(Level.WARNING)
-                && record.getMessage().contains("Attempted to remove a non-existent match"));
+        boolean foundWarning = records.stream().anyMatch(r ->
+                r.getLevel().equals(Level.WARNING)
+                && r.getMessage().contains("Attempted to remove a non-existent match"));
         assertTrue(foundWarning, "Expected warning log message when removing a non-existent match.");
     }
 
@@ -71,8 +71,8 @@ class MatchRepositoryTest {
         private final List<LogRecord> records = new ArrayList<>();
 
         @Override
-        public void publish(LogRecord record) {
-            records.add(record);
+        public void publish(LogRecord r) {
+            records.add(r);
         }
 
         @Override
