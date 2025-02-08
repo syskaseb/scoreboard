@@ -1,6 +1,6 @@
 # Live Football World Cup Scoreboard Library
 
-This is a simple Java library that implements a live scoreboard for the Football World Cup. The library provides a public API for starting matches, updating scores, finishing matches, and retrieving a summary of ongoing matches.
+This is a simple Java 21 library that implements a live scoreboard for the Football World Cup. The library provides a public API for starting matches, updating scores, finishing matches, and retrieving a summary of ongoing matches.
 
 ## Features
 
@@ -35,8 +35,14 @@ This is a simple Java library that implements a live scoreboard for the Football
 
 ## How to Run the Tests
 
-You can run the tests using your favorite build tool:
+You can run the tests using Maven or the Maven wrapper:
 
-- **Maven:**
+- **Using the Maven Wrapper on Unix/Linux/macOS:**
+  ```bash
+  ./mvnw test
+- Using the Maven Wrapper on Windows:
+  ```bash
+  mvnw.cmd test
+- Or directly with Maven:
   ```bash
   mvn test
