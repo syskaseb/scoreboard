@@ -253,9 +253,10 @@ class ScoreboardTest {
 
     @Test
     void summary_should_be_immutable() {
-        // Given a new scoreboard instance with at least one match
+        // Given a new scoreboard instance with at least one match and the new match to be added
         Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("TeamA", "TeamB");
+        Match newMatch = new Match("TeamX", "TeamY", 0, 0);
 
         // When retrieving the summary
         List<Match> summary = scoreboard.getSummary();
@@ -263,7 +264,7 @@ class ScoreboardTest {
         // Then attempting to modify the summary should throw an UnsupportedOperationException.
         assertThrows(
                 UnsupportedOperationException.class,
-                () -> summary.add(new Match("TeamX", "TeamY", 0, 0))
+                () -> summary.add(newMatch)
         );
     }
 
