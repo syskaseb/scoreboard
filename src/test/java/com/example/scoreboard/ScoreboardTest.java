@@ -3,7 +3,6 @@ package com.example.scoreboard;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
-
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -23,7 +22,7 @@ class ScoreboardTest {
         List<Match> summary = scoreboard.getSummary();
         assertEquals(1, summary.size(), "Summary should contain one match.");
 
-        // And get first match should return that match.
+        // And getSummary().getFirst() should return that match.
         Match match = scoreboard.getSummary().getFirst();
         assertNotNull(match, "First match should not be null.");
         assertEquals("TeamA", match.homeTeam(), "Home team should be TeamA.");
@@ -105,5 +104,28 @@ class ScoreboardTest {
                 () -> scoreboard.startMatch("TeamC", "TeamB"),
                 "Expected exception when away team is already in a match.");
         assertEquals("One of the teams is already in a match.", exception.getMessage());
+    }
+
+    @Test
+    void should_add_multiple_matches_when_no_conflicts() {
+        // Given an empty scoreboard
+        Scoreboard scoreboard = new Scoreboard();
+
+        // When starting multiple matches
+        scoreboard.startMatch("TeamA", "TeamB");
+        scoreboard.startMatch("TeamC", "TeamD");
+        scoreboard.startMatch("TeamE", "TeamF");
+
+        // Then getSummary should return all the matches
+        List<Match> summary = scoreboard.getSummary();
+        assertEquals(3, summary.size(), "Summary should contain three matches.");
+
+        // Check that each expected match is present.
+        assertTrue(summary.stream().anyMatch(m -> m.homeTeam().equals("TeamA") && m.awayTeam().equals("TeamB")),
+                "Expected match TeamA vs TeamB to be present.");
+        assertTrue(summary.stream().anyMatch(m -> m.homeTeam().equals("TeamC") && m.awayTeam().equals("TeamD")),
+                "Expected match TeamC vs TeamD to be present.");
+        assertTrue(summary.stream().anyMatch(m -> m.homeTeam().equals("TeamE") && m.awayTeam().equals("TeamF")),
+                "Expected match TeamE vs TeamF to be present.");
     }
 }
