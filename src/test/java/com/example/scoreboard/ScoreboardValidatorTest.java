@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.stream.Stream;
-
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -26,7 +25,6 @@ class ScoreboardValidatorTest {
     }
 
     private void invokeValidator(String homeTeam, String awayTeam) {
-        // This single invocation is the only one that might throw an exception.
         validator.validateNewMatch(homeTeam, awayTeam, List.of());
     }
 
@@ -52,8 +50,10 @@ class ScoreboardValidatorTest {
 
     static Stream<Arguments> conflictingMatchProvider() {
         return Stream.of(
-                Arguments.of("TeamA", "TeamC"),
-                Arguments.of("TeamC", "TeamB")
+                Arguments.of("TeamA", "TeamC"), // new homeTeam equals existing homeTeam
+                Arguments.of("TeamC", "TeamB"), // new awayTeam equals existing awayTeam
+                Arguments.of("TeamB", "TeamC"), // new homeTeam equals existing awayTeam
+                Arguments.of("TeamC", "TeamA")  // new awayTeam equals existing homeTeam
         );
     }
 

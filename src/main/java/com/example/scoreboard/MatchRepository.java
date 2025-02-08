@@ -3,17 +3,19 @@ package com.example.scoreboard;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 class MatchRepository {
+    private static final Logger logger = Logger.getLogger(MatchRepository.class.getName());
 
     private final Map<String, Match> matches = new HashMap<>();
 
     void addMatch(Match match) {
         String key = generateKey(match);
-        if (matches.containsKey(key)) {
-            throw new IllegalArgumentException("A match between these teams already exists.");
+        if (matches.putIfAbsent(key, match) != null) {
+            logger.log(Level.WARNING, "Attempted to add duplicate match: {0} (key: {1})", new Object[]{match, key});
         }
-        matches.put(key, match);
     }
 
     List<Match> getAllMatches() {
@@ -21,7 +23,11 @@ class MatchRepository {
     }
 
     void removeMatch(Match match) {
-        matches.remove(generateKey(match));
+        String key = generateKey(match);
+        Match removed = matches.remove(key);
+        if (removed == null) {
+            logger.log(Level.WARNING, "Attempted to remove a non-existent match: {0} (key: {1})", new Object[]{match, key});
+        }
     }
 
     /**
