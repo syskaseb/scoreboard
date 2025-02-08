@@ -26,6 +26,23 @@ public class Scoreboard {
     }
 
     /**
+     * Updates the score for an ongoing match.
+     * <p>
+     * Since {@code Match} is immutable, this method locates the match based on the teams provided
+     * in the {@code match} parameter and creates a new updated instance with the provided scores.
+     * </p>
+     *
+     * @param match     the match instance identifying the match to update; the teams must match an existing match.
+     * @param homeScore the new score for the home team; must be non-negative.
+     * @param awayScore the new score for the away team; must be non-negative.
+     * @throws IllegalArgumentException if the match is not found or if any score is negative.
+     */
+    public void updateScore(Match match, int homeScore, int awayScore) {
+        validator.validateScore(homeScore, awayScore);
+        repository.updateMatchScore(match.homeTeam(), match.awayTeam(), homeScore, awayScore);
+    }
+
+    /**
      * Returns an immutable summary of the current matches.
      *
      * @return an unmodifiable list of matches
