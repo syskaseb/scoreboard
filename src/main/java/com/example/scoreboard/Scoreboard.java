@@ -61,7 +61,7 @@ public final class Scoreboard {
     public void updateScore(Match match, int homeScore, int awayScore) {
         synchronized (repository) {
             validator.validateScore(homeScore, awayScore);
-            repository.updateMatchScore(match.homeTeam(), match.awayTeam(), homeScore, awayScore);
+            repository.updateMatchScore(match, homeScore, awayScore);
         }
     }
 

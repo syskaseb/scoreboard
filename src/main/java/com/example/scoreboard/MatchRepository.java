@@ -22,12 +22,12 @@ class MatchRepository {
         return List.copyOf(matches.values());
     }
 
-    synchronized void updateMatchScore(String homeTeam, String awayTeam, int homeScore, int awayScore) {
-        String key = generateKey(new Match(homeTeam, awayTeam, 0, 0));
+    synchronized void updateMatchScore(Match match, int homeScore, int awayScore) {
+        String key = generateKey(match);
         Match existing = matches.get(key);
         if (existing == null) {
             logger.log(Level.WARNING, "Attempted to update non-existent match: {0} (key: {1})",
-                    new Object[]{homeTeam + " vs " + awayTeam, key});
+                    new Object[]{match.homeTeam() + " vs " + match.awayTeam(), key});
             throw new IllegalArgumentException("Match not found.");
         }
         Match updated = new Match(existing.homeTeam(), existing.awayTeam(), homeScore, awayScore);
