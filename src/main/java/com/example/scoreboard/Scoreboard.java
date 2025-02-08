@@ -11,6 +11,23 @@ public final class Scoreboard {
     private final MatchRepository repository = new MatchRepository();
     private final ScoreboardValidator validator = new ScoreboardValidator();
 
+    // Package-private constructor: production code in other packages must use getInstance()
+    Scoreboard() { }
+
+    // Holder for lazy, thread-safe singleton initialization.
+    private static class Holder {
+        private static final Scoreboard INSTANCE = new Scoreboard();
+    }
+
+    /**
+     * Returns the singleton instance of the Scoreboard.
+     *
+     * @return the singleton Scoreboard instance.
+     */
+    public static Scoreboard getInstance() {
+        return Holder.INSTANCE;
+    }
+
     /**
      * Starts a match with an initial score of 0-0.
      *
