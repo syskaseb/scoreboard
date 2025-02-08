@@ -1,11 +1,15 @@
 package com.example.scoreboard;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.List;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ScoreboardTest {
@@ -244,5 +248,21 @@ class ScoreboardTest {
         assertEquals("Spain", summary.getFirst().homeTeam());
         assertEquals("Mexico", summary.get(1).homeTeam());
         assertEquals("Germany", summary.get(2).homeTeam());
+    }
+
+    @Test
+    void summary_should_be_immutable() {
+        // Given a new scoreboard instance with at least one match
+        Scoreboard scoreboard = new Scoreboard();
+        scoreboard.startMatch("TeamA", "TeamB");
+
+        // When retrieving the summary
+        List<Match> summary = scoreboard.getSummary();
+
+        // Then attempting to modify the summary should throw an UnsupportedOperationException.
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> summary.add(new Match("TeamX", "TeamY", 0, 0))
+        );
     }
 }
