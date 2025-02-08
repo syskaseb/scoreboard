@@ -8,6 +8,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -264,5 +265,17 @@ class ScoreboardTest {
                 UnsupportedOperationException.class,
                 () -> summary.add(new Match("TeamX", "TeamY", 0, 0))
         );
+    }
+
+    @Test
+    void givenScoreboardSingleton_whenGetInstanceCalledRepeatedly_thenSameInstanceReturned() {
+        // Given the Scoreboard singleton implementation
+
+        // When
+        Scoreboard instance1 = Scoreboard.getInstance();
+        Scoreboard instance2 = Scoreboard.getInstance();
+
+        // Then
+        assertSame(instance1, instance2, "getInstance() should always return the same instance");
     }
 }
