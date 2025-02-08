@@ -23,7 +23,7 @@ class ScoreboardTest {
         List<Match> summary = scoreboard.getSummary();
         assertEquals(1, summary.size(), "Summary should contain one match.");
 
-        // And getFirstMatch should return that match.
+        // And get first match should return that match.
         Match match = scoreboard.getSummary().getFirst();
         assertNotNull(match, "First match should not be null.");
         assertEquals("TeamA", match.homeTeam(), "Home team should be TeamA.");
@@ -86,6 +86,24 @@ class ScoreboardTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> scoreboard.startMatch("TeamB", "TeamA"),
                 "Expected exception when duplicate match is added in reversed order.");
-        assertEquals("A match between these teams already exists.", exception.getMessage());
+        assertEquals("One of the teams is already in a match.", exception.getMessage());
+    }
+
+    @Test
+    void should_throw_exception_when_team_already_in_another_match() {
+        Scoreboard scoreboard = new Scoreboard();
+        // Start a match with TeamA and TeamB.
+        scoreboard.startMatch("TeamA", "TeamB");
+        // Attempt to start another match with TeamA and TeamC.
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> scoreboard.startMatch("TeamA", "TeamC"),
+                "Expected exception when home team is already in a match.");
+        assertEquals("One of the teams is already in a match.", exception.getMessage());
+
+        // Also, attempt with TeamC and TeamB.
+        exception = assertThrows(IllegalArgumentException.class,
+                () -> scoreboard.startMatch("TeamC", "TeamB"),
+                "Expected exception when away team is already in a match.");
+        assertEquals("One of the teams is already in a match.", exception.getMessage());
     }
 }
