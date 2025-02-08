@@ -23,7 +23,9 @@ class ScoreboardTest {
         List<Match> summary = scoreboard.getSummary();
         assertEquals(1, summary.size(), "Summary should contain one match.");
 
-        Match match = summary.getFirst();
+        // And getFirstMatch should return that match.
+        Match match = scoreboard.getSummary().getFirst();
+        assertNotNull(match, "First match should not be null.");
         assertEquals("TeamA", match.homeTeam(), "Home team should be TeamA.");
         assertEquals("TeamB", match.awayTeam(), "Away team should be TeamB.");
         assertEquals(0, match.homeScore(), "Initial home score should be 0.");
@@ -73,5 +75,17 @@ class ScoreboardTest {
                 () -> scoreboard.startMatch("TeamA", "TeamA"),
                 "Expected exception when same team names are used.");
         assertEquals("Home and away teams must be different.", exception.getMessage());
+    }
+
+    @Test
+    void should_throw_exception_when_duplicate_match_in_any_order() {
+        Scoreboard scoreboard = new Scoreboard();
+        // Start match in one order.
+        scoreboard.startMatch("TeamA", "TeamB");
+        // Attempt to start match with teams in reverse order.
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> scoreboard.startMatch("TeamB", "TeamA"),
+                "Expected exception when duplicate match is added in reversed order.");
+        assertEquals("A match between these teams already exists.", exception.getMessage());
     }
 }
