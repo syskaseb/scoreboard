@@ -76,15 +76,16 @@ public final class Scoreboard {
      * Returns an immutable summary of the current matches, ordered by the total score in descending order.
      * Matches with the same total score are ordered by recency (the match that was started later appears first).
      *
-     * @return an unmodifiable list of matches, ordered by total score and recency.
+     * @return an unmodifiable list of matche snapshots, ordered by total score and recency.
      */
-    public List<Match> getSummary() {
+    public List<MatchSnapshot> getSummary() {
         synchronized (repository) {
             List<Match> matches = repository.getAllMatches();
             return matches.stream()
                     .sorted(Comparator
                             .comparingInt((Match m) -> m.homeScore() + m.awayScore()).reversed()
                             .thenComparing(matches::indexOf, Comparator.reverseOrder()))
+                    .map(MatchSnapshot.class::cast)
                     .toList();
         }
     }

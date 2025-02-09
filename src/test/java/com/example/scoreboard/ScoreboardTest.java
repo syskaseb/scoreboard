@@ -24,11 +24,11 @@ class ScoreboardTest {
         scoreboard.startMatch("TeamA", "TeamB");
 
         // Then getSummary should return one match with initial 0-0 scores.
-        List<Match> summary = scoreboard.getSummary();
+        List<MatchSnapshot> summary = scoreboard.getSummary();
         assertEquals(1, summary.size(), "Summary should contain one match.");
 
         // And the first match should be TeamA vs TeamB.
-        Match match = summary.getFirst();
+        MatchSnapshot match = summary.getFirst();
         assertNotNull(match, "First match should not be null.");
         assertEquals("TeamA", match.homeTeam(), "Home team should be TeamA.");
         assertEquals("TeamB", match.awayTeam(), "Away team should be TeamB.");
@@ -130,7 +130,7 @@ class ScoreboardTest {
         scoreboard.finishMatch("TeamA", "TeamB");
 
         // Then the summary should be empty
-        List<Match> summary = scoreboard.getSummary();
+        List<MatchSnapshot> summary = scoreboard.getSummary();
         assertEquals(0, summary.size(), "Summary should be empty after finishing the match.");
     }
 
@@ -145,7 +145,7 @@ class ScoreboardTest {
         scoreboard.startMatch("TeamE", "TeamF");
 
         // Then getSummary should return all the matches.
-        List<Match> summary = scoreboard.getSummary();
+        List<MatchSnapshot> summary = scoreboard.getSummary();
         assertEquals(3, summary.size(), "Summary should contain three matches.");
 
         // And each expected match should be present.
@@ -167,9 +167,9 @@ class ScoreboardTest {
         scoreboard.updateScore("TeamA", "TeamB", 2, 3);
 
         // Then the updated match should reflect new scores
-        List<Match> summary = scoreboard.getSummary();
+        List<MatchSnapshot> summary = scoreboard.getSummary();
         assertEquals(1, summary.size());
-        Match updated = summary.getFirst();
+        MatchSnapshot updated = summary.getFirst();
         assertEquals("TeamA", updated.homeTeam());
         assertEquals("TeamB", updated.awayTeam());
         assertEquals(2, updated.homeScore());
@@ -231,7 +231,7 @@ class ScoreboardTest {
         // 1) Spain vs Brazil (5, more recent insertion than Mexico vs Canada)
         // 2) Mexico vs Canada (5)
         // 3) Germany vs France (3)
-        List<Match> summary = scoreboard.getSummary();
+        List<MatchSnapshot> summary = scoreboard.getSummary();
         assertEquals(3, summary.size(), "Summary should contain 3 matches.");
         assertEquals("Spain", summary.get(0).homeTeam());
         assertEquals("Mexico", summary.get(1).homeTeam());
@@ -245,7 +245,7 @@ class ScoreboardTest {
         scoreboard.startMatch("TeamA", "TeamB");
 
         // When retrieving the summary
-        List<Match> summary = scoreboard.getSummary();
+        List<MatchSnapshot> summary = scoreboard.getSummary();
         Match newMatch = new Match("TeamX", "TeamY", 0, 0);
 
         // Then attempting to modify the summary should throw an UnsupportedOperationException.

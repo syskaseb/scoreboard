@@ -52,9 +52,10 @@ public API for starting matches, updating scores, finishing matches, and retriev
 - For better search performance a pageable search with support on repository level could be implemented. Then also an
   architecture decision on optimisations like maintaining order index within Match record or adding an index or some
   sort of precomputation.
-- It wasn't mentioned explicitly what the expected summary format. For simplicity, I decided to return a list of matches
-  in the required order. Records already have decent default toString implementation that will allow previewing the
-  consecutive matches results. In the future some kind of report generator could be implemented.
+- It wasn't mentioned explicitly what the expected summary format. For simplicity, I decided to return a list of match
+  snapshots as the summary. The summary is ordered by total score in descending order, and for matches with the same
+  total score, the most recently started match appears first. In the future some kind of report generator could be
+  implemented.
 - An alternative approach to repository using Map is to use Set and implement custom equals/hashcode methods in Match
   class, but I decided to handle it explicitly in one place along with validation
 
