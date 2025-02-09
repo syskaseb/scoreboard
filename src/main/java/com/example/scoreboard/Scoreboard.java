@@ -11,32 +11,16 @@ public final class Scoreboard {
     private final MatchRepository repository = new MatchRepository();
     private final ScoreboardValidator validator = new ScoreboardValidator();
 
-    // Package-private constructor: production code in other packages must use getInstance()
     Scoreboard() { }
 
-    // Holder for lazy, thread-safe singleton initialization.
     private static class Holder {
         private static final Scoreboard INSTANCE = new Scoreboard();
     }
 
-    /**
-     * Returns the singleton instance of the Scoreboard.
-     *
-     * @return the singleton Scoreboard instance.
-     */
     public static Scoreboard getInstance() {
         return Holder.INSTANCE;
     }
 
-    /**
-     * Starts a match with an initial score of 0-0.
-     *
-     * @param homeTeam name of the home team; must not be null, blank, or equal to awayTeam,
-     *                 and must not already be in a match.
-     * @param awayTeam name of the away team; must not be null, blank, or equal to homeTeam,
-     *                 and must not already be in a match.
-     * @throws IllegalArgumentException if validation fails.
-     */
     public void startMatch(String homeTeam, String awayTeam) {
         synchronized (repository) {
             validator.validateNewMatch(homeTeam, awayTeam, repository.getAllMatches());
@@ -44,15 +28,6 @@ public final class Scoreboard {
         }
     }
 
-    /**
-     * Updates the score for an ongoing match (identified by homeTeam and awayTeam).
-     *
-     * @param homeTeam  the home team name; must match an existing match.
-     * @param awayTeam  the away team name; must match an existing match.
-     * @param homeScore the new score for the home team; must be non-negative.
-     * @param awayScore the new score for the away team; must be non-negative.
-     * @throws IllegalArgumentException if the match is not found or if any score is negative.
-     */
     public void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) {
         synchronized (repository) {
             validator.validateScore(homeScore, awayScore);
@@ -60,12 +35,6 @@ public final class Scoreboard {
         }
     }
 
-    /**
-     * Finishes a match (removes it) from the scoreboard, identified by homeTeam and awayTeam.
-     *
-     * @param homeTeam the home team name; must match an existing match.
-     * @param awayTeam the away team name; must match an existing match.
-     */
     public void finishMatch(String homeTeam, String awayTeam) {
         synchronized (repository) {
             repository.removeMatch(homeTeam, awayTeam);
@@ -73,13 +42,13 @@ public final class Scoreboard {
     }
 
     /**
-     * Returns an immutable summary of the current matches, ordered by the total score in descending order.
-     * Matches with the same total score are ordered by recency (the match that was started later appears first).
-     *
-     * @return an unmodifiable list of matches, ordered by total score and recency.
+     * Returns an immutable summary of the current matches, ordered by total score descending
+     * and, for ties, by recency (the match that was started later appears first).
      */
     public List<Match> getSummary() {
         synchronized (repository) {
+            // getAllMatches returns the LinkedHashSet as a list in insertion order.
+            // We'll sort by total score descending, then by insertion recency descending.
             List<Match> matches = repository.getAllMatches();
             return matches.stream()
                     .sorted(Comparator
