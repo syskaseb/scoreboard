@@ -58,6 +58,9 @@ public API for starting matches, updating scores, finishing matches, and retriev
   implemented.
 - An alternative approach to repository using Map is to use Set and implement custom equals/hashcode methods in Match
   class, but I decided to handle it explicitly in one place along with validation
+- Please visit `showcase-separate-packages-java-module-info` branch for alternative approach to packaging
+- Please visit `showcase-replace-repository-map-with-set` branch for alternative approach to persisting matches (not
+  preferred implementation)
 
 ## How to Run the Tests
 
