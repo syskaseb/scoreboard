@@ -38,30 +38,37 @@ public final class Scoreboard {
      * @throws IllegalArgumentException if validation fails.
      */
     public void startMatch(String homeTeam, String awayTeam) {
-        // Synchronize to ensure that validate and add are atomic.
         synchronized (repository) {
             validator.validateNewMatch(homeTeam, awayTeam, repository.getAllMatches());
-            Match match = new Match(homeTeam, awayTeam, 0, 0);
-            repository.addMatch(match);
+            repository.addMatch(homeTeam, awayTeam, 0, 0);
         }
     }
 
     /**
-     * Updates the score for an ongoing match.
-     * <p>
-     * Since {@code Match} is immutable, this method locates the match based on the teams provided
-     * in the {@code match} parameter and creates a new instance with the updated scores.
-     * </p>
+     * Updates the score for an ongoing match (identified by homeTeam and awayTeam).
      *
-     * @param match     the match instance identifying the match to update; the teams must match an existing match.
+     * @param homeTeam  the home team name; must match an existing match.
+     * @param awayTeam  the away team name; must match an existing match.
      * @param homeScore the new score for the home team; must be non-negative.
      * @param awayScore the new score for the away team; must be non-negative.
      * @throws IllegalArgumentException if the match is not found or if any score is negative.
      */
-    public void updateScore(Match match, int homeScore, int awayScore) {
+    public void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) {
         synchronized (repository) {
             validator.validateScore(homeScore, awayScore);
-            repository.updateMatchScore(match, homeScore, awayScore);
+            repository.updateMatchScore(homeTeam, awayTeam, homeScore, awayScore);
+        }
+    }
+
+    /**
+     * Finishes a match (removes it) from the scoreboard, identified by homeTeam and awayTeam.
+     *
+     * @param homeTeam the home team name; must match an existing match.
+     * @param awayTeam the away team name; must match an existing match.
+     */
+    public void finishMatch(String homeTeam, String awayTeam) {
+        synchronized (repository) {
+            repository.removeMatch(homeTeam, awayTeam);
         }
     }
 
@@ -79,17 +86,6 @@ public final class Scoreboard {
                             .comparingInt((Match m) -> m.homeScore() + m.awayScore()).reversed()
                             .thenComparing(matches::indexOf, Comparator.reverseOrder()))
                     .toList();
-        }
-    }
-
-    /**
-     * Finishes a match by removing it from storage.
-     *
-     * @param match the match instance to finish.
-     */
-    public void finishMatch(Match match) {
-        synchronized (repository) {
-            repository.removeMatch(match);
         }
     }
 }

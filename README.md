@@ -34,11 +34,10 @@ This is a simple Java 21 library that implements a live scoreboard for the Footb
   Comprehensive JUnit 5 tests are provided to cover all functionality, including negative score validation and summary ordering.
 
 ### Assumptions and further comments
-- Under uncertain requirement on the API usage, I assumed that the user will add the match using only team names. Rest of the operations I assumed are using Match object. In the future application could support using i.e. Match UUID for scoreboard operations.
+- Under uncertain requirement on the API usage, I assumed that the user will control scoreboard methods using team names. In the future application could support using i.e. Match UUID for scoreboard operations.
 - I prevented creating multiple instances of the scoreboard as the name Live Football World Cup Scoreboard indicates single instance. Scoreboard class is final because context doesn't assume extensions. Could have stayed open for extension with regard to SOLID but decided to don't give the user control over inheritance.
 - API Usage is thread safe because of the not specified use case. Wanted to prevent any unexpected behavior of the API.
 - For better search performance a pageable search with support on repository level could be implemented. Then also an architecture decision on optimisations like maintaining order index within Match record or adding an index or some sort of precomputation.
-- 
 
 ## How to Run the Tests
 

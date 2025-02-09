@@ -11,9 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class MatchRepositoryTest {
 
@@ -37,15 +35,13 @@ class MatchRepositoryTest {
 
     @Test
     void addMatch_should_log_warning_when_duplicate_match_added() {
-        // Given a match added to the repository.
-        Match match1 = new Match("TeamA", "TeamB", 0, 0);
-        repository.addMatch(match1);
+        // Given a match added to the repository
+        repository.addMatch("TeamA", "TeamB", 0, 0);
 
-        // When attempting to add a duplicate match with teams reversed.
-        Match duplicateMatch = new Match("TeamB", "TeamA", 0, 0);
-        repository.addMatch(duplicateMatch);
+        // When attempting to add a duplicate match with teams reversed
+        repository.addMatch("TeamB", "TeamA", 0, 0);
 
-        // Then a warning log message should be captured.
+        // Then a warning log message should be captured
         List<LogRecord> records = logHandler.getRecords();
         boolean foundWarning = records.stream().anyMatch(r ->
                 r.getLevel().equals(Level.WARNING)
@@ -56,11 +52,11 @@ class MatchRepositoryTest {
 
     @Test
     void removeMatch_should_log_warning_when_non_existent_match_removed() {
-        // Given a match that was never added.
-        Match nonExistentMatch = new Match("TeamA", "TeamB", 0, 0);
-        repository.removeMatch(nonExistentMatch);
+        // Given a match that was never added
+        // When attempting to remove this non-existent match
+        repository.removeMatch("TeamA", "TeamB");
 
-        // Then a warning log message should be captured.
+        // Then a warning log message should be captured
         List<LogRecord> records = logHandler.getRecords();
         boolean foundWarning = records.stream().anyMatch(r ->
                 r.getLevel().equals(Level.WARNING)
@@ -71,14 +67,13 @@ class MatchRepositoryTest {
 
     @Test
     void updateMatchScore_should_update_successfully() {
-        // Given a match added to the repository.
-        Match match1 = new Match("TeamA", "TeamB", 0, 0);
-        repository.addMatch(match1);
+        // Given a match added to the repository
+        repository.addMatch("TeamA", "TeamB", 0, 0);
 
-        // When updating the match's score.
-        repository.updateMatchScore(match1, 2, 3);
+        // When updating the match's score
+        repository.updateMatchScore("TeamA", "TeamB", 2, 3);
 
-        // Then the repository should return the updated match.
+        // Then the repository should return the updated match
         List<Match> allMatches = repository.getAllMatches();
         assertEquals(1, allMatches.size(), "There should be exactly one match.");
         Match updated = allMatches.getFirst();
@@ -90,16 +85,14 @@ class MatchRepositoryTest {
 
     @Test
     void updateMatchScore_should_log_warning_when_non_existent_match() {
-        // Given a match that is not in the repository.
-        Match nonExistent = new Match("TeamX", "TeamY", 0, 0);
-
-        // When attempting to update the score for the non-existent match.
+        // Given a match that is not in the repository
+        // When attempting to update the score for this non-existent match
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> repository.updateMatchScore(nonExistent, 1, 1),
+                () -> repository.updateMatchScore("TeamX", "TeamY", 1, 1),
                 "Expected exception when updating non-existent match.");
         assertEquals("Match not found.", exception.getMessage());
 
-        // Then a warning log message should be captured.
+        // Then a warning log message should be captured
         List<LogRecord> records = logHandler.getRecords();
         boolean foundWarning = records.stream().anyMatch(r ->
                 r.getLevel().equals(Level.WARNING)
@@ -108,9 +101,6 @@ class MatchRepositoryTest {
         assertTrue(foundWarning, "Expected warning log message when updating non-existent match.");
     }
 
-    /**
-     * A simple custom log handler that collects log records.
-     */
     private static class TestLogHandler extends Handler {
         private final List<LogRecord> records = new ArrayList<>();
 
@@ -121,7 +111,7 @@ class MatchRepositoryTest {
 
         @Override
         public void flush() {
-            // No action needed for flushing.
+            // No action needed
         }
 
         @Override

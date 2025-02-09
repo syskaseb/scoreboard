@@ -125,13 +125,11 @@ class ScoreboardTest {
         // Given a scoreboard with a match between TeamA and TeamB
         Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("TeamA", "TeamB");
-        Match match = scoreboard.getSummary().getFirst();
-        assertNotNull(match, "There should be a match before finishing.");
 
         // When finishing the match
-        scoreboard.finishMatch(match);
+        scoreboard.finishMatch("TeamA", "TeamB");
 
-        // Then the summary should be empty.
+        // Then the summary should be empty
         List<Match> summary = scoreboard.getSummary();
         assertEquals(0, summary.size(), "Summary should be empty after finishing the match.");
     }
@@ -164,12 +162,11 @@ class ScoreboardTest {
         // Given a scoreboard with a match between TeamA and TeamB
         Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("TeamA", "TeamB");
-        Match original = scoreboard.getSummary().getFirst();
 
-        // When updating the score using the match instance
-        scoreboard.updateScore(original, 2, 3);
+        // When updating the score using team names
+        scoreboard.updateScore("TeamA", "TeamB", 2, 3);
 
-        // Then the updated match should reflect the new scores.
+        // Then the updated match should reflect new scores
         List<Match> summary = scoreboard.getSummary();
         assertEquals(1, summary.size());
         Match updated = summary.getFirst();
@@ -183,11 +180,10 @@ class ScoreboardTest {
     void updateScore_should_throw_exception_for_non_existent_match() {
         // Given a scoreboard with no match between TeamX and TeamY
         Scoreboard scoreboard = new Scoreboard();
-        Match nonExistent = new Match("TeamX", "TeamY", 0, 0);
 
-        // When attempting to update the score for the non-existent match
+        // When updating a match that doesn't exist
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> scoreboard.updateScore(nonExistent, 1, 1));
+                () -> scoreboard.updateScore("TeamX", "TeamY", 1, 1));
 
         // Then an exception with the message "Match not found." is thrown.
         assertEquals("Match not found.", exception.getMessage());
@@ -198,55 +194,46 @@ class ScoreboardTest {
         // Given a scoreboard with a match between TeamA and TeamB
         Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("TeamA", "TeamB");
-        Match match = scoreboard.getSummary().getFirst();
 
         // When attempting to update the score with a negative home score,
         // then an exception should be thrown.
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> scoreboard.updateScore(match, -1, 3));
+                () -> scoreboard.updateScore("TeamA", "TeamB", -1, 3));
         assertEquals("Scores must be non-negative.", exception.getMessage());
 
         // And when attempting to update the score with a negative away score,
         // then an exception should also be thrown.
         exception = assertThrows(IllegalArgumentException.class,
-                () -> scoreboard.updateScore(match, 2, -1));
+                () -> scoreboard.updateScore("TeamA", "TeamB", 2, -1));
         assertEquals("Scores must be non-negative.", exception.getMessage());
     }
 
     @Test
     void should_return_summary_ordered_by_total_score_and_recency() {
-        // Given a scoreboard with several matches started in sequence
+        // Given a new scoreboard
         Scoreboard scoreboard = new Scoreboard();
-        scoreboard.startMatch("Mexico", "Canada");    // Insertion index 0
-        scoreboard.startMatch("Spain", "Brazil");       // Insertion index 1
-        scoreboard.startMatch("Germany", "France");     // Insertion index 2
 
-        // When updating scores so that two matches have equal total scores:
-        // - Mexico vs Canada: total score 5 (0+5)
-        // - Spain vs Brazil: total score 5 (2+3)
-        // - Germany vs France: total score 3 (2+1)
-        List<Match> initialSummary = scoreboard.getSummary();
-        Match mexicoMatch = initialSummary.stream()
-                .filter(m -> m.homeTeam().equals("Mexico"))
-                .findFirst().orElseThrow();
-        Match spainMatch = initialSummary.stream()
-                .filter(m -> m.homeTeam().equals("Spain"))
-                .findFirst().orElseThrow();
-        Match germanyMatch = initialSummary.stream()
-                .filter(m -> m.homeTeam().equals("Germany"))
-                .findFirst().orElseThrow();
+        // And several matches started in sequence
+        // insertion index 0: Mexico vs Canada
+        // insertion index 1: Spain vs Brazil
+        // insertion index 2: Germany vs France
+        scoreboard.startMatch("Mexico", "Canada");
+        scoreboard.startMatch("Spain", "Brazil");
+        scoreboard.startMatch("Germany", "France");
 
-        scoreboard.updateScore(mexicoMatch, 0, 5);
-        scoreboard.updateScore(spainMatch, 2, 3);
-        scoreboard.updateScore(germanyMatch, 2, 1);
+        // When updating scores so that Mexico/Canada and Spain/Brazil both have total = 5,
+        // but Spain vs Brazil was started later (insertion index 1).
+        scoreboard.updateScore("Mexico", "Canada", 0, 5);  // total = 5
+        scoreboard.updateScore("Spain", "Brazil", 2, 3);   // total = 5
+        scoreboard.updateScore("Germany", "France", 2, 1); // total = 3
 
-        // Then the summary should be ordered as follows:
-        // 1. Spain vs Brazil (total 5, more recent than Mexico vs Canada)
-        // 2. Mexico vs Canada (total 5)
-        // 3. Germany vs France (total 3)
+        // Then the summary should list:
+        // 1) Spain vs Brazil (5, more recent insertion than Mexico vs Canada)
+        // 2) Mexico vs Canada (5)
+        // 3) Germany vs France (3)
         List<Match> summary = scoreboard.getSummary();
-        assertEquals(3, summary.size());
-        assertEquals("Spain", summary.getFirst().homeTeam());
+        assertEquals(3, summary.size(), "Summary should contain 3 matches.");
+        assertEquals("Spain", summary.get(0).homeTeam());
         assertEquals("Mexico", summary.get(1).homeTeam());
         assertEquals("Germany", summary.get(2).homeTeam());
     }
@@ -256,10 +243,10 @@ class ScoreboardTest {
         // Given a new scoreboard instance with at least one match and the new match to be added
         Scoreboard scoreboard = new Scoreboard();
         scoreboard.startMatch("TeamA", "TeamB");
-        Match newMatch = new Match("TeamX", "TeamY", 0, 0);
 
         // When retrieving the summary
         List<Match> summary = scoreboard.getSummary();
+        Match newMatch = new Match("TeamX", "TeamY", 0, 0);
 
         // Then attempting to modify the summary should throw an UnsupportedOperationException.
         assertThrows(
