@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * Immutable record representing a match.
  */
-public record Match(String homeTeam, String awayTeam, int homeScore, int awayScore) {
+public record Match(String homeTeam, String awayTeam, int homeScore, int awayScore) implements MatchSnapshot {
 
     @Override
     public boolean equals(Object o) {
