@@ -1,10 +1,10 @@
-package com.example.scoreboard;
+package com.example.scoreboard.internal;
 
 import java.util.List;
 
-class ScoreboardValidator {
+public class ScoreboardValidator {
 
-    void validateNewMatch(String homeTeam, String awayTeam, List<Match> existingMatches) {
+    public void validateNewMatch(String homeTeam, String awayTeam, List<Match> existingMatches) {
         if (homeTeam == null || homeTeam.isBlank()) {
             throw new IllegalArgumentException("Home team name cannot be empty.");
         }
@@ -22,7 +22,7 @@ class ScoreboardValidator {
         }
     }
 
-    void validateScore(int homeScore, int awayScore) {
+    public void validateScore(int homeScore, int awayScore) {
         if (homeScore < 0 || awayScore < 0) {
             throw new IllegalArgumentException("Scores must be non-negative.");
         }

@@ -1,5 +1,6 @@
-package com.example.scoreboard;
+package com.example.scoreboard.api;
 
+import com.example.scoreboard.internal.Match;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;

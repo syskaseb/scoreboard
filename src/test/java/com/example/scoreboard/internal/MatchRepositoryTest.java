@@ -1,4 +1,4 @@
-package com.example.scoreboard;
+package com.example.scoreboard.internal;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

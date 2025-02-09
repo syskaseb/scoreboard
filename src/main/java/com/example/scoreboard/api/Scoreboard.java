@@ -1,4 +1,8 @@
-package com.example.scoreboard;
+package com.example.scoreboard.api;
+
+import com.example.scoreboard.internal.Match;
+import com.example.scoreboard.internal.MatchRepository;
+import com.example.scoreboard.internal.ScoreboardValidator;
 
 import java.util.Comparator;
 import java.util.List;
@@ -12,7 +16,8 @@ public final class Scoreboard {
     private final ScoreboardValidator validator = new ScoreboardValidator();
 
     // Package-private constructor: production code in other packages must use getInstance()
-    Scoreboard() { }
+    Scoreboard() {
+    }
 
     // Holder for lazy, thread-safe singleton initialization.
     private static class Holder {

@@ -1,4 +1,4 @@
-package com.example.scoreboard;
+package com.example.scoreboard.api;
 
 /**
  * A read-only view of a match state.
