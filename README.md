@@ -60,7 +60,11 @@ public API for starting matches, updating scores, finishing matches, and retriev
   class, but I decided to handle it explicitly in one place along with validation
 - Please visit `showcase-separate-packages-java-module-info` branch for alternative approach to packaging
 - Please visit `showcase-replace-repository-map-with-set` branch for alternative approach to persisting matches (not
-  preferred implementation)
+  preferred implementation).
+- While `Scoreboard.startMatch` fetches all matches from the repository for validation I decided to keep it as it is for
+  simplicity. An alternative, more performant yet more complex solution could be i.e. to use a separate lookup HashSet
+  structure for matches (loosening the repositorys SRP principle as drawback) or use a HashMap for matches but then
+  maintaining the order info within a Match structure.
 
 ## How to Run the Tests
 
