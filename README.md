@@ -49,9 +49,8 @@ public API for starting matches, updating scores, finishing matches, and retriev
   single instance. Scoreboard class is final because context doesn't assume extensions. Could have stayed open for
   extension with regard to SOLID but decided to don't give the user control over inheritance.
 - API Usage is thread safe because of the not specified use case. Wanted to prevent any unexpected behavior of the API.
-- For better search performance a pageable search with support on repository level could be implemented. Then also an
-  architecture decision on optimisations like maintaining order index within Match record or adding an index or some
-  sort of precomputation.
+- For better search performance a pageable search with support on repository level could be implemented. 
+- For optimising summary printing, match insertion order within Match record was introduced.
 - It wasn't mentioned explicitly what the expected summary format. For simplicity, I decided to return a list of match
   snapshots as the summary. The summary is ordered by total score in descending order, and for matches with the same
   total score, the most recently started match appears first. In the future some kind of report generator could be

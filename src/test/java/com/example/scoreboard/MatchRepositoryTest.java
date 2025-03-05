@@ -40,15 +40,10 @@ class MatchRepositoryTest {
 
     @Test
     void addMatch_should_log_warning_when_duplicate_match_added() {
-        // Given a match added to the repository
         repository.addMatch("TeamA", "TeamB", 0, 0);
-
-        // When attempting to add a duplicate match with teams reversed
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> repository.addMatch("TeamB", "TeamA", 0, 0));
         assertEquals("One of the teams is already in a match.", exception.getMessage());
-
-        // When attempting to add a duplicate match with teams reversed
         List<LogRecord> records = logHandler.getRecords();
         boolean foundWarning = records.stream().anyMatch(r ->
                 r.getLevel().equals(Level.WARNING)
@@ -59,11 +54,7 @@ class MatchRepositoryTest {
 
     @Test
     void removeMatch_should_log_warning_when_non_existent_match_removed() {
-        // Given a match that was never added
-        // When attempting to remove this non-existent match
         repository.removeMatch("TeamA", "TeamB");
-
-        // Then a warning log message should be captured
         List<LogRecord> records = logHandler.getRecords();
         boolean foundWarning = records.stream().anyMatch(r ->
                 r.getLevel().equals(Level.WARNING)
@@ -74,13 +65,8 @@ class MatchRepositoryTest {
 
     @Test
     void updateMatchScore_should_update_successfully() {
-        // Given a match added to the repository
         repository.addMatch("TeamA", "TeamB", 0, 0);
-
-        // When updating the match's score
         repository.updateMatchScore("TeamA", "TeamB", 2, 3);
-
-        // Then the repository should return the updated match
         List<Match> allMatches = repository.getAllMatches();
         assertEquals(1, allMatches.size(), "There should be exactly one match.");
         Match updated = allMatches.getFirst();
@@ -92,14 +78,10 @@ class MatchRepositoryTest {
 
     @Test
     void updateMatchScore_should_log_warning_when_non_existent_match() {
-        // Given a match that is not in the repository
-        // When attempting to update the score for this non-existent match
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> repository.updateMatchScore("TeamX", "TeamY", 1, 1),
                 "Expected exception when updating non-existent match.");
         assertEquals("Match not found.", exception.getMessage());
-
-        // Then a warning log message should be captured
         List<LogRecord> records = logHandler.getRecords();
         boolean foundWarning = records.stream().anyMatch(r ->
                 r.getLevel().equals(Level.WARNING)

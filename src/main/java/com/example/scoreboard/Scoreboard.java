@@ -12,7 +12,8 @@ public final class Scoreboard {
     private final ScoreboardValidator validator = new ScoreboardValidator();
 
     // Package-private constructor: production code in other packages must use getInstance()
-    Scoreboard() { }
+    Scoreboard() {
+    }
 
     // Holder for lazy, thread-safe singleton initialization.
     private static class Holder {
@@ -53,7 +54,7 @@ public final class Scoreboard {
      * @param awayScore the new score for the away team; must be non-negative.
      * @throws IllegalArgumentException if the match is not found or if any score is negative.
      */
-    public void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) {
+    public void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) throws IllegalArgumentException {
         synchronized (repository) {
             validator.validateScore(homeScore, awayScore);
             repository.updateMatchScore(homeTeam, awayTeam, homeScore, awayScore);
@@ -78,15 +79,16 @@ public final class Scoreboard {
      *
      * @return an unmodifiable list of matche snapshots, ordered by total score and recency.
      */
-    public List<MatchSnapshot> getSummary() {
+    public synchronized List<MatchSnapshot> getSummary() {
+        List<Match> matches;
         synchronized (repository) {
-            List<Match> matches = repository.getAllMatches();
-            return matches.stream()
-                    .sorted(Comparator
-                            .comparingInt((Match m) -> m.homeScore() + m.awayScore()).reversed()
-                            .thenComparing(matches::indexOf, Comparator.reverseOrder()))
-                    .map(MatchSnapshot.class::cast)
-                    .toList();
+            matches = repository.getAllMatches();
         }
+        return matches.parallelStream()
+                .sorted(Comparator
+                        .comparingInt((Match m) -> m.homeScore() + m.awayScore()).reversed()
+                        .thenComparing(Match::insertionOrder, Comparator.reverseOrder()))
+                .map(MatchSnapshot.class::cast)
+                .toList();
     }
 }

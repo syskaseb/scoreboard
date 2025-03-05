@@ -1,7 +1,7 @@
 package com.example.scoreboard;
 
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,8 +11,9 @@ import java.util.logging.Logger;
 class MatchRepository {
 
     private static final Logger logger = Logger.getLogger(MatchRepository.class.getName());
-    private final Map<String, Match> matches = new LinkedHashMap<>();
+    private final Map<String, Match> matches = new HashMap<>();
     private final Set<String> activeTeams = new HashSet<>();
+    private long nextInsertionOrder = 0;
 
     synchronized void addMatch(String homeTeam, String awayTeam, int homeScore, int awayScore) {
         if (isTeamInMatch(homeTeam) || isTeamInMatch(awayTeam)) {
@@ -20,17 +21,14 @@ class MatchRepository {
             throw new IllegalArgumentException("One of the teams is already in a match.");
         }
         String key = generateKey(homeTeam, awayTeam);
-        if (matches.putIfAbsent(key, new Match(homeTeam, awayTeam, homeScore, awayScore)) != null) {
+        Match newMatch = new Match(homeTeam, awayTeam, homeScore, awayScore, nextInsertionOrder++);
+        if (matches.putIfAbsent(key, newMatch) != null) {
             logger.log(Level.WARNING, "Attempted to add duplicate match: {0} vs. {1} (key: {2})",
                     new Object[]{homeTeam, awayTeam, key});
         } else {
             activeTeams.add(homeTeam);
             activeTeams.add(awayTeam);
         }
-    }
-
-    private boolean isTeamInMatch(String team) {
-        return activeTeams.contains(team);
     }
 
     synchronized List<Match> getAllMatches() {
@@ -45,7 +43,7 @@ class MatchRepository {
                     new Object[]{homeTeam, awayTeam, key});
             throw new IllegalArgumentException("Match not found.");
         }
-        Match updated = new Match(existing.homeTeam(), existing.awayTeam(), homeScore, awayScore);
+        Match updated = new Match(existing.homeTeam(), existing.awayTeam(), homeScore, awayScore, existing.insertionOrder());
         matches.put(key, updated);
     }
 
@@ -59,6 +57,10 @@ class MatchRepository {
             activeTeams.remove(homeTeam);
             activeTeams.remove(awayTeam);
         }
+    }
+
+    synchronized boolean isTeamInMatch(String team) {
+        return activeTeams.contains(team);
     }
 
     private String generateKey(String team1, String team2) {
