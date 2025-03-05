@@ -23,7 +23,7 @@ public API for starting matches, updating scores, finishing matches, and retriev
 ## Implementation Details
 
 - **In-Memory Storage:**  
-  Matches are stored in a `LinkedHashMap` within the repository to preserve insertion order. A canonical key is
+  Matches are stored in a `HashMap` within the repository. A canonical key is
   generated from the team names (ignoring their order) to uniquely identify a match.
 
 - **Immutable Records:**  
