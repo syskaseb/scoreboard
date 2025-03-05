@@ -79,7 +79,7 @@ public final class Scoreboard {
      *
      * @return an unmodifiable list of matche snapshots, ordered by total score and recency.
      */
-    public synchronized List<MatchSnapshot> getSummary() {
+    public List<MatchSnapshot> getSummary() {
         List<Match> matches;
         synchronized (repository) {
             matches = repository.getAllMatches();
