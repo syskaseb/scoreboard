@@ -76,3 +76,34 @@ You can run the tests using Maven or the Maven wrapper:
 - Or directly with Maven:
   ```bash
   mvn test
+
+## Verifying the JAR Signature
+
+To verify the authenticity of the `scoreboard-<project_version>.jar` file, follow these steps:
+
+1. **Import the Public Key** (if not already imported):
+
+   ```bash
+   gpg --keyserver hkps://keys.openpgp.org --recv-keys 24665407AFF840D4
+   ```
+
+2. **Verify the Signature:**
+
+   ```bash
+   gpg --verify scoreboard-<project_version>.jar.asc scoreboard-<project_version>.jar
+   ```
+
+   If the verification is successful, you will see a message similar to:
+
+```
+gpg: Signature made YYYY-MM-DD HH:MM:SS UTC using RSA key ID <KEY_ID>
+gpg: Good signature from "Author Name <author@example.com>"
+```
+
+If the signature is not valid, a warning will be displayed.
+
+2. **Check the Key Fingerprint (Optional):**
+   To confirm that the key matches the expected author, check the fingerprint:
+   ```bash
+   gpg --fingerprint 24665407AFF840D4
+   ```
