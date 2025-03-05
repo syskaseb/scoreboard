@@ -6,11 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ScoreboardTest {
@@ -150,11 +146,11 @@ class ScoreboardTest {
 
         // And each expected match should be present.
         assertTrue(summary.stream().anyMatch(m -> m.homeTeam().equals("TeamA") && m.awayTeam().equals("TeamB")),
-                "Expected match TeamA vs TeamB to be present.");
+                "Expected match TeamA vs. TeamB to be present.");
         assertTrue(summary.stream().anyMatch(m -> m.homeTeam().equals("TeamC") && m.awayTeam().equals("TeamD")),
-                "Expected match TeamC vs TeamD to be present.");
+                "Expected match TeamC vs. TeamD to be present.");
         assertTrue(summary.stream().anyMatch(m -> m.homeTeam().equals("TeamE") && m.awayTeam().equals("TeamF")),
-                "Expected match TeamE vs TeamF to be present.");
+                "Expected match TeamE vs. TeamF to be present.");
     }
 
     @Test

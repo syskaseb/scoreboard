@@ -1,8 +1,10 @@
 package com.example.scoreboard;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -10,13 +12,25 @@ class MatchRepository {
 
     private static final Logger logger = Logger.getLogger(MatchRepository.class.getName());
     private final Map<String, Match> matches = new LinkedHashMap<>();
+    private final Set<String> activeTeams = new HashSet<>();
 
     synchronized void addMatch(String homeTeam, String awayTeam, int homeScore, int awayScore) {
+        if (isTeamInMatch(homeTeam) || isTeamInMatch(awayTeam)) {
+            logger.log(Level.WARNING, "One of the teams is already in a match: {0} or {1}", new Object[]{homeTeam, awayTeam});
+            throw new IllegalArgumentException("One of the teams is already in a match.");
+        }
         String key = generateKey(homeTeam, awayTeam);
         if (matches.putIfAbsent(key, new Match(homeTeam, awayTeam, homeScore, awayScore)) != null) {
             logger.log(Level.WARNING, "Attempted to add duplicate match: {0} vs. {1} (key: {2})",
-                    new Object[] { homeTeam, awayTeam, key });
+                    new Object[]{homeTeam, awayTeam, key});
+        } else {
+            activeTeams.add(homeTeam);
+            activeTeams.add(awayTeam);
         }
+    }
+
+    private boolean isTeamInMatch(String team) {
+        return activeTeams.contains(team);
     }
 
     synchronized List<Match> getAllMatches() {
@@ -28,7 +42,7 @@ class MatchRepository {
         Match existing = matches.get(key);
         if (existing == null) {
             logger.log(Level.WARNING, "Attempted to update non-existent match: {0} vs. {1} (key: {2})",
-                    new Object[] { homeTeam, awayTeam, key });
+                    new Object[]{homeTeam, awayTeam, key});
             throw new IllegalArgumentException("Match not found.");
         }
         Match updated = new Match(existing.homeTeam(), existing.awayTeam(), homeScore, awayScore);
@@ -40,7 +54,10 @@ class MatchRepository {
         Match removed = matches.remove(key);
         if (removed == null) {
             logger.log(Level.WARNING, "Attempted to remove a non-existent match: {0} vs. {1} (key: {2})",
-                    new Object[] { homeTeam, awayTeam, key });
+                    new Object[]{homeTeam, awayTeam, key});
+        } else {
+            activeTeams.remove(homeTeam);
+            activeTeams.remove(awayTeam);
         }
     }
 

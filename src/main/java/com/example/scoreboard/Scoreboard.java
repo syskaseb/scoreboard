@@ -39,7 +39,7 @@ public final class Scoreboard {
      */
     public void startMatch(String homeTeam, String awayTeam) {
         synchronized (repository) {
-            validator.validateNewMatch(homeTeam, awayTeam, repository.getAllMatches());
+            validator.validateNewMatch(homeTeam, awayTeam);
             repository.addMatch(homeTeam, awayTeam, 0, 0);
         }
     }

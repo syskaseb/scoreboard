@@ -13,7 +13,9 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class MatchRepositoryTest {
@@ -42,13 +44,15 @@ class MatchRepositoryTest {
         repository.addMatch("TeamA", "TeamB", 0, 0);
 
         // When attempting to add a duplicate match with teams reversed
-        repository.addMatch("TeamB", "TeamA", 0, 0);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> repository.addMatch("TeamB", "TeamA", 0, 0));
+        assertEquals("One of the teams is already in a match.", exception.getMessage());
 
-        // Then a warning log message should be captured
+        // When attempting to add a duplicate match with teams reversed
         List<LogRecord> records = logHandler.getRecords();
         boolean foundWarning = records.stream().anyMatch(r ->
                 r.getLevel().equals(Level.WARNING)
-                        && r.getMessage().contains("Attempted to add duplicate match")
+                        && r.getMessage().contains("One of the teams is already in a match")
         );
         assertTrue(foundWarning, "Expected warning log message when duplicate match is added.");
     }
@@ -114,11 +118,11 @@ class MatchRepositoryTest {
 
         @Override
         public void flush() {
-            // No action needed
+            //no-op
         }
 
         @Override
-        public void close() throws SecurityException {
+        public void close() {
             records.clear();
         }
 
