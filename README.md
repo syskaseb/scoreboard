@@ -77,6 +77,53 @@ You can run the tests using Maven or the Maven wrapper:
   ```bash
   mvn test
 
+## Integrating via GitHub Packages
+
+This library is available on GitHub Packages, simplifying integration into your Maven projects.
+
+### Step 1: Configure Repository
+
+Add the following repository to your project's `pom.xml`:
+
+```xml
+<repositories>
+  <repository>
+    <id>github</id>
+    <url>https://maven.pkg.github.com/syskaseb/scoreboard</url>
+  </repository>
+</repositories>
+```
+
+### Step 2: Add Dependency
+
+Include the package as a dependency:
+
+```xml
+<dependency>
+  <groupId>com.syskaseb</groupId>
+  <artifactId>scoreboard</artifactId>
+  <version>{replace with actual project version}</version>
+</dependency>
+```
+
+### Step 3: GitHub Authentication
+
+GitHub Packages require authentication. Update your Maven settings (`~/.m2/settings.xml`) with your credentials:
+
+```xml
+<servers>
+  <server>
+    <id>github</id>
+    <username>YOUR_GITHUB_USERNAME</username>
+    <password>YOUR_GITHUB_TOKEN</password>
+  </server>
+</servers>
+```
+
+Generate a token with the `read:packages` scope from your [GitHub Settings](https://github.com/settings/tokens).
+
+Your project is now configured and ready to use this dependency seamlessly.
+
 ## Verifying the JAR Signature
 
 To verify the authenticity of the `scoreboard-<project_version>.jar` file, follow these steps:
