@@ -39,10 +39,8 @@ public final class Scoreboard {
      * @throws IllegalArgumentException if validation fails.
      */
     public void startMatch(String homeTeam, String awayTeam) {
-        synchronized (repository) {
-            validator.validateNewMatch(homeTeam, awayTeam);
-            repository.addMatch(homeTeam, awayTeam, 0, 0);
-        }
+        validator.validateNewMatch(homeTeam, awayTeam);
+        repository.addMatch(homeTeam, awayTeam, 0, 0);
     }
 
     /**
@@ -55,10 +53,8 @@ public final class Scoreboard {
      * @throws IllegalArgumentException if the match is not found or if any score is negative.
      */
     public void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) throws IllegalArgumentException {
-        synchronized (repository) {
-            validator.validateScore(homeScore, awayScore);
-            repository.updateMatchScore(homeTeam, awayTeam, homeScore, awayScore);
-        }
+        validator.validateScore(homeScore, awayScore);
+        repository.updateMatchScore(homeTeam, awayTeam, homeScore, awayScore);
     }
 
     /**
@@ -68,22 +64,17 @@ public final class Scoreboard {
      * @param awayTeam the away team name; must match an existing match.
      */
     public void finishMatch(String homeTeam, String awayTeam) {
-        synchronized (repository) {
-            repository.removeMatch(homeTeam, awayTeam);
-        }
+        repository.removeMatch(homeTeam, awayTeam);
     }
 
     /**
      * Returns an immutable summary of the current matches, ordered by the total score in descending order.
      * Matches with the same total score are ordered by recency (the match that was started later appears first).
      *
-     * @return an unmodifiable list of matche snapshots, ordered by total score and recency.
+     * @return an unmodifiable list of match snapshots, ordered by total score and recency.
      */
     public List<MatchSnapshot> getSummary() {
-        List<Match> matches;
-        synchronized (repository) {
-            matches = repository.getAllMatches();
-        }
+        List<Match> matches = repository.getAllMatches();
         return matches.parallelStream()
                 .sorted(Comparator
                         .comparingInt((Match m) -> m.homeScore() + m.awayScore()).reversed()
