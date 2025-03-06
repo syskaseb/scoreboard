@@ -100,7 +100,7 @@ Include the package as a dependency:
 
 ```xml
 <dependency>
-  <groupId>com.syskaseb</groupId>
+  <groupId>com.example.scoreboard</groupId>
   <artifactId>scoreboard</artifactId>
   <version>{replace with actual project version}</version>
 </dependency>
