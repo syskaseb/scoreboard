@@ -52,7 +52,7 @@ public final class Scoreboard {
      * @param awayScore the new score for the away team; must be non-negative.
      * @throws IllegalArgumentException if the match is not found or if any score is negative.
      */
-    public void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) throws IllegalArgumentException {
+    public void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) {
         validator.validateScore(homeScore, awayScore);
         repository.updateMatchScore(homeTeam, awayTeam, homeScore, awayScore);
     }
