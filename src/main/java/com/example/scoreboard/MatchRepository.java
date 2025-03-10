@@ -31,6 +31,10 @@ class MatchRepository {
         }
     }
 
+    private boolean isTeamInMatch(String team) {
+        return activeTeams.contains(team);
+    }
+
     synchronized List<Match> getAllMatches() {
         return List.copyOf(matches.values());
     }
@@ -57,10 +61,6 @@ class MatchRepository {
             activeTeams.remove(homeTeam);
             activeTeams.remove(awayTeam);
         }
-    }
-
-    synchronized boolean isTeamInMatch(String team) {
-        return activeTeams.contains(team);
     }
 
     private String generateKey(String team1, String team2) {
